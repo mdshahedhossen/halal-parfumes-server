@@ -48,7 +48,7 @@ async function run(){
             res.send(result)
         });
 
-        // Update stock quantity
+        // Update stock quantity PUT
         app.put('/items/:id', async(req, res) => {
             const id = req.params.id;
             const updatePerfumes = req.body;
@@ -63,7 +63,7 @@ async function run(){
             res.send(result);
         })
 
-        // Deliver items
+        // Deliver items PUT
         app.put('/items/deliver/:id', async (req, res) => {
             const id = req.params.id
             const newQuantity = req.body
@@ -81,13 +81,20 @@ async function run(){
         })
         
 
-        // app.get('/items/:email',async(req,res)=>{
-        //     const query={emial:req.params.email}
-        //     const cursor=itemCollection.find(query);
-        //     const result=await cursor.toArray();
-        //     res.send(result)
-        // })
-
+        // myItems Fruits Collection
+        app.get('/myItems', verifyJWT, async (req, res) => {
+            const decodedEmail = req.decoded.email;
+            const email = req.query.email;
+            if (email === decodedEmail) {
+                const query = { email: email }
+                const cursor = myItemsCollection.find(query)
+                const myItems = await cursor.toArray()
+                res.send(myItems)
+            }
+            else {
+                res.status(403).send({ message: 'forbidden access' })
+            }
+        });
         
     }
     finally{
