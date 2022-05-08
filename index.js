@@ -47,6 +47,47 @@ async function run(){
             const result=await itemCollection.deleteOne(query);
             res.send(result)
         });
+
+        // Update stock quantity
+        app.put('/items/:id', async(req, res) => {
+            const id = req.params.id;
+            const updatePerfumes = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updated = {
+                $set: {
+                    quantity: updatePerfumes.quantity
+                }
+            };
+            const result = await itemCollection.updateOne(filter, updated, options);
+            res.send(result);
+        })
+
+        // Deliver items
+        app.put('/items/deliver/:id', async (req, res) => {
+            const id = req.params.id
+            const newQuantity = req.body
+            const deliver = newQuantity.quantityUpdate - 1
+            const query = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: deliver
+                }
+            }
+
+            const result = await itemCollection.updateOne(query, updateDoc, options)
+            res.send(result);
+        })
+        
+
+        // app.get('/items/:email',async(req,res)=>{
+        //     const query={emial:req.params.email}
+        //     const cursor=itemCollection.find(query);
+        //     const result=await cursor.toArray();
+        //     res.send(result)
+        // })
+
         
     }
     finally{
