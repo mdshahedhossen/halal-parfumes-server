@@ -117,6 +117,10 @@ app.get('/',(req,res)=>{
     res.send('Perfume server')
 })
 
+app.get('/hero',(req,res)=>{
+    res.send('heroku running')
+})
+
 app.listen(port,()=>{
     console.log('Crud server is running',port)
 })
