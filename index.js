@@ -17,6 +17,7 @@ async function run(){
     try{
         await client.connect();
         const itemCollection=client.db('halalPerfumes').collection('items')
+        const myItemCollection=client.db('halalPerfumes').collection('myItems')
 
         app.get('/items', async(req,res)=>{
             const query={};
@@ -78,22 +79,29 @@ async function run(){
 
             const result = await itemCollection.updateOne(query, updateDoc, options)
             res.send(result);
+        });
+
+        app.post('/myItems', async (req, res) => {
+            const myItems = req.body;
+            const result = await myItemCollection.insertOne(myItems);
+            res.send(result);
+        })
+
+        // my item get
+        app.get('/myItems',async(req,res)=>{
+            const query={};
+            const cursor=myItemCollection.find(query)
+            const myItems=await cursor.toArray();
+            res.send(myItems);
         })
         
 
-        // myItems Fruits Collection
-        app.get('/myItems', verifyJWT, async (req, res) => {
-            const decodedEmail = req.decoded.email;
-            const email = req.query.email;
-            if (email === decodedEmail) {
-                const query = { email: email }
-                const cursor = myItemsCollection.find(query)
-                const myItems = await cursor.toArray()
-                res.send(myItems)
-            }
-            else {
-                res.status(403).send({ message: 'forbidden access' })
-            }
+        // myItems Delete
+        app.delete('/myItems/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await myItemCollection.deleteOne(query);
+            res.send(result);
         });
         
     }
